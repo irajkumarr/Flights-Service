@@ -10,8 +10,9 @@ const airplaneSchema = Joi.object({
     "any.required": "Model number is required",
     "string.empty": "Model number cannot be empty",
   }),
-  capacity: Joi.number().positive().messages({
+  capacity: Joi.number().positive().max(1000).messages({
     "number.base": "Capacity must be a number",
+    "number.max": "Capacity cannot exceed 1000",
     "number.positive": "Capacity must be greater than 0",
   }),
 });

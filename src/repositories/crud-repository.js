@@ -8,8 +8,8 @@ class CrudRepository {
     return response;
   }
 
-  async getAll(where) {
-    const response = await this.model.find(where);
+  async getAll() {
+    const response = await this.model.findMany();
     return response;
   }
 

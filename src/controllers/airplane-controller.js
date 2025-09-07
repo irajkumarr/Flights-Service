@@ -17,6 +17,17 @@ const createAirplane = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.CREATED).json(SuccessResponse);
 });
 
+/**
+ * GET : /
+ * req-body {}
+ */
+const getAirplanes = asyncHandler(async (req, res) => {
+  const airplanes = await AirplaneService.getAirplanes();
+  SuccessResponse.data = airplanes;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
 module.exports = {
   createAirplane,
+  getAirplanes,
 };

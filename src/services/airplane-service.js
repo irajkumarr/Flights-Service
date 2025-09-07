@@ -21,6 +21,18 @@ async function createAirplane(data) {
   }
 }
 
+async function getAirplanes() {
+  const airplanes = await airplaneRepository.getAll();
+  if (airplanes.length == 0) {
+    throw new AppError(
+      "No airplanes found in the database",
+      StatusCodes.NOT_FOUND
+    );
+  }
+  return airplanes;
+}
+
 module.exports = {
   createAirplane,
+  getAirplanes,
 };

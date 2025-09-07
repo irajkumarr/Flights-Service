@@ -27,7 +27,29 @@ const getAirplanes = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.OK).json(SuccessResponse);
 });
 
+/**
+ * GET : /:id
+ * req-body {}
+ */
+const getAirplane = asyncHandler(async (req, res) => {
+  const airplane = await AirplaneService.getAirplane(req.params.id);
+  SuccessResponse.data = airplane;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
+/**
+ * DELETE : /:id
+ * req-body {}
+ */
+const deleteAirplane = asyncHandler(async (req, res) => {
+  const airplane = await AirplaneService.deleteAirplane(req.params.id);
+  SuccessResponse.data = airplane;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
 module.exports = {
   createAirplane,
   getAirplanes,
+  getAirplane,
+  deleteAirplane,
 };

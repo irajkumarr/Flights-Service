@@ -22,17 +22,62 @@ async function createAirplane(data) {
 }
 
 async function getAirplanes() {
-  const airplanes = await airplaneRepository.getAll();
-  if (airplanes.length == 0) {
+  try {
+    const airplanes = await airplaneRepository.getAll();
+    if (airplanes.length == 0) {
+      throw new AppError(
+        "No airplanes found in the database",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return airplanes;
+  } catch (error) {
     throw new AppError(
-      "No airplanes found in the database",
-      StatusCodes.NOT_FOUND
+      "Cannot fetch data of all the airplanes",
+      StatusCodes.INTERNAL_SERVER_ERROR
     );
   }
-  return airplanes;
+}
+
+async function getAirplane(id) {
+  try {
+    const airplane = await airplaneRepository.get(Number(id));
+    return airplane;
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError(
+        "The airplane you requested is not present",
+        error.statusCode
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airplane",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function deleteAirplane(id) {
+  try {
+    const airplane = await airplaneRepository.delete(Number(id));
+    return airplane;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The airplane you requested to delete is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airplane",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
 }
 
 module.exports = {
   createAirplane,
   getAirplanes,
+  getAirplane,
+  deleteAirplane,
 };

@@ -1,3 +1,6 @@
+const { AppError } = require("../utils");
+const { StatusCodes } = require("http-status-codes");
+
 class CrudRepository {
   constructor(model) {
     this.model = model;
@@ -19,6 +22,12 @@ class CrudRepository {
         id: data,
       },
     });
+    if (!response) {
+      throw new AppError(
+        "Not able to find the resource",
+        StatusCodes.NOT_FOUND
+      );
+    }
     return response;
   }
 

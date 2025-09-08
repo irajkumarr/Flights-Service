@@ -1,14 +1,17 @@
 const express = require("express");
 const { AirportController } = require("../../controllers");
-const { AirplaneMiddlewares } = require("../../middlewares");
+const { AirportMiddlewares } = require("../../middlewares");
 
 const router = express.Router();
 
 // api/v1/airports  POST
 router.post(
   "/",
-  AirplaneMiddlewares.validateCreateRequest,
+  AirportMiddlewares.validateCreateRequest,
   AirportController.createAirport
 );
+
+// api/v1/airports  GET
+router.get("/", AirportController.getAirports);
 
 module.exports = router;

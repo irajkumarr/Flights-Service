@@ -28,6 +28,25 @@ async function createAirport(data) {
   }
 }
 
+async function getAirports() {
+  try {
+    const airports = await airportRepository.getAll();
+    if (airports.length == 0) {
+      throw new AppError(
+        "No airports found in the database",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return airports;
+  } catch (error) {
+    throw new AppError(
+      "Cannot fetch data of all the airports",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createAirport,
+  getAirports,
 };

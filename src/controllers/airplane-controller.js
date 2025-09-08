@@ -48,8 +48,8 @@ const deleteAirplane = asyncHandler(async (req, res) => {
 });
 
 /**
- * DELETE : /:id
- * req-body {}
+ * PATCH : /:id
+ * req-body {capacity:444}
  */
 const updateAirplane = asyncHandler(async (req, res) => {
   const { capacity } = req.body;

@@ -25,6 +25,44 @@ async function createCity(data) {
   }
 }
 
+async function deleteCity(id) {
+  try {
+    const city = await cityRepository.delete(Number(id));
+    return city;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The city you requested to delete is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the city",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function updateCity(id, data) {
+  try {
+    const city = await cityRepository.update(Number(id), data);
+    return city;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The city you requested to update is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the city",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createCity,
+  deleteCity,
+  updateCity,
 };

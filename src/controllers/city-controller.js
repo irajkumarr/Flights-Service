@@ -16,6 +16,31 @@ const createCity = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.CREATED).json(SuccessResponse);
 });
 
+/**
+ * DELETE : /:id
+ * req-body {}
+ */
+const deleteCity = asyncHandler(async (req, res) => {
+  const city = await CityService.deleteCity(req.params.id);
+  SuccessResponse.data = city;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
+/**
+ * PATCH : /:id
+ * req-body {name:"London"}
+ */
+const updateCity = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+  const city = await CityService.updateCity(req.params.id, {
+    name,
+  });
+  SuccessResponse.data = city;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
 module.exports = {
   createCity,
+  deleteCity,
+  updateCity,
 };

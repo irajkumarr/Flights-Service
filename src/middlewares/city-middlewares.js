@@ -32,6 +32,33 @@ function validateCreateRequest(req, res, next) {
   next();
 }
 
+const cityUpdateSchema = Joi.object({
+  name: Joi.string().required().max(50).messages({
+    "any.required": "City name is required",
+    "string.base": "City name must be a string",
+    "string.empty": "City name cannot be empty",
+    "string.max": "City name cannot exceed more than 50 characters.",
+  }),
+});
+// Middleware
+function validateUpdateRequest(req, res, next) {
+  const { error, value } = cityUpdateSchema.validate(req.body, {
+    abortEarly: false,
+    convert: false,
+  });
+
+  if (error) {
+    const errors = error.details.map((detail) => FormatMessage(detail.message));
+    ErrorResponse.message = "Something went wrong while updating city";
+    ErrorResponse.error = new AppError(errors, StatusCodes.BAD_REQUEST);
+    return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+  }
+
+  req.body = value;
+  next();
+}
+
 module.exports = {
   validateCreateRequest,
+  validateUpdateRequest,
 };

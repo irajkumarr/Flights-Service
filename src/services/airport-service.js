@@ -64,8 +64,45 @@ async function getAirport(id) {
   }
 }
 
+async function deleteAirport(id) {
+  try {
+    const airport = await airportRepository.delete(Number(id));
+    return airport;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The airport you requested to delete is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airport",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function updateAirport(id, data) {
+  try {
+    const airport = await airportRepository.update(Number(id), data);
+    return airport;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The airport you requested to update is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airport",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createAirport,
   getAirports,
   getAirport,
+  deleteAirport,updateAirport
 };

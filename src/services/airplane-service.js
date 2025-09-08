@@ -75,9 +75,28 @@ async function deleteAirplane(id) {
   }
 }
 
+async function updateAirplane(id, data) {
+  try {
+    const airplane = await airplaneRepository.update(Number(id), data);
+    return airplane;
+  } catch (error) {
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "The airplane you requested to update is not present",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airplane",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createAirplane,
   getAirplanes,
   getAirplane,
   deleteAirplane,
+  updateAirplane,
 };

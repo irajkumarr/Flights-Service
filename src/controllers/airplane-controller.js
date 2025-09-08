@@ -47,9 +47,23 @@ const deleteAirplane = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.OK).json(SuccessResponse);
 });
 
+/**
+ * DELETE : /:id
+ * req-body {}
+ */
+const updateAirplane = asyncHandler(async (req, res) => {
+  const { capacity } = req.body;
+  const airplane = await AirplaneService.updateAirplane(req.params.id, {
+    capacity,
+  });
+  SuccessResponse.data = airplane;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
 module.exports = {
   createAirplane,
   getAirplanes,
   getAirplane,
   deleteAirplane,
+  updateAirplane,
 };

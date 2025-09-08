@@ -1,0 +1,33 @@
+const { StatusCodes } = require("http-status-codes");
+const { AirportRepository } = require("../repositories");
+const { AppError } = require("../utils");
+
+const airportRepository = new AirportRepository();
+
+async function createAirport(data) {
+  try {
+    const airport = await airportRepository.create({ data });
+    return airport;
+  } catch (error) {
+    // Unique Constraint error
+    if (error.name === "PrismaClientKnownRequestError") {
+      throw new AppError(
+        "Airport name or code must be unique",
+        StatusCodes.CONFLICT
+      );
+    }
+    //validation error
+    if (error.name === "PrismaClientValidationError") {
+      throw new AppError("Invalid input", StatusCodes.BAD_REQUEST);
+    }
+    //fallback
+    throw new AppError(
+      "Something went wrong while creating airport",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+module.exports = {
+  createAirport,
+};

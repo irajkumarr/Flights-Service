@@ -29,8 +29,18 @@ const getAirports = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.CREATED).json(SuccessResponse);
 });
 
-
+/**
+ * GET : /
+ * req-body {}
+ */
+const getAirport = asyncHandler(async (req, res) => {
+  const airport = await AirportService.getAirport(req.params.id);
+  SuccessResponse.data = airport;
+  return res.status(StatusCodes.CREATED).json(SuccessResponse);
+});
 
 module.exports = {
-  createAirport,getAirports
+  createAirport,
+  getAirports,
+  getAirport,
 };

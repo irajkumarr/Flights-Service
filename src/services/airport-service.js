@@ -46,7 +46,26 @@ async function getAirports() {
   }
 }
 
+async function getAirport(id) {
+  try {
+    const airport = await airportRepository.get(Number(id));
+    return airport;
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError(
+        "The airport you requested is not present",
+        error.statusCode
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of the airport",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createAirport,
   getAirports,
+  getAirport,
 };

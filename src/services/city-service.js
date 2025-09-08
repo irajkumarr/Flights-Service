@@ -61,8 +61,47 @@ async function updateCity(id, data) {
   }
 }
 
+async function getCities() {
+  try {
+    const airplanes = await airplaneRepository.getAll();
+    if (airplanes.length == 0) {
+      throw new AppError(
+        "No cities found in the database",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return airplanes;
+  } catch (error) {
+    throw new AppError(
+      "Cannot fetch data of all the cities",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function getCity(id) {
+  try {
+    const city = await cityRepository.get(Number(id));
+
+    return city;
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError(
+        "The city you requested is not present",
+        error.statusCode
+      );
+    }
+    throw new AppError(
+      "Cannot fetch data of all the cities",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createCity,
   deleteCity,
   updateCity,
+  getCities,
+  getCity,
 };

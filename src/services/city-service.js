@@ -63,14 +63,14 @@ async function updateCity(id, data) {
 
 async function getCities() {
   try {
-    const airplanes = await airplaneRepository.getAll();
-    if (airplanes.length == 0) {
+    const cities = await cityRepository.getAll();
+    if (cities.length == 0) {
       throw new AppError(
         "No cities found in the database",
         StatusCodes.NOT_FOUND
       );
     }
-    return airplanes;
+    return cities;
   } catch (error) {
     throw new AppError(
       "Cannot fetch data of all the cities",

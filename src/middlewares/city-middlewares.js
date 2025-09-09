@@ -18,7 +18,6 @@ const citySchema = Joi.object({
 function validateCreateRequest(req, res, next) {
   const { error, value } = citySchema.validate(req.body, {
     abortEarly: false,
-    convert: false,
   });
 
   if (error) {

@@ -33,7 +33,6 @@ const airportCreateSchema = Joi.object({
 function validateCreateRequest(req, res, next) {
   const { error, value } = airportCreateSchema.validate(req.body, {
     abortEarly: false,
-    convert: false,
   });
 
   if (error) {

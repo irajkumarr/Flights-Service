@@ -48,19 +48,17 @@ const flightCreateSchema = Joi.object({
     "string.empty": "Boarding gate cannot be empty",
   }),
   totalSeats: Joi.number().positive().messages({
-     "number.base": "Total seats must be a number",
+    "number.base": "Total seats must be a number",
     "any.required": "Total seats is required",
     "number.empty": "Total seats cannot be empty",
     "number.positive": "Total seats must be greater than 0",
   }),
- 
 });
 
 // Middleware
 function validateCreateRequest(req, res, next) {
   const { error, value } = flightCreateSchema.validate(req.body, {
     abortEarly: false,
-    convert: false,
   });
 
   if (error) {

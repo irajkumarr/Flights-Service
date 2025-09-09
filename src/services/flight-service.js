@@ -38,10 +38,16 @@ async function getFlights(query) {
   }
   // price 1000-4500
   if (query.price) {
-    [minPrice, maxPrice] = query.price.split("-");
+    [minPrice, maxPrice] = query.price.split("-").map(Number);
     customFilter.price = {
       gte: minPrice,
       lte: maxPrice,
+    };
+  }
+  //travellers 2
+  if (query.travellers) {
+    customFilter.totalSeats = {
+      gte: Number(query.travellers),
     };
   }
 
@@ -55,6 +61,7 @@ async function getFlights(query) {
     }
     return flights;
   } catch (error) {
+    console.log(error);
     if (error.statusCode === StatusCodes.NOT_FOUND) {
       throw new AppError("No flights found in the database", error.statusCode);
     }

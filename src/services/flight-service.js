@@ -30,6 +30,7 @@ async function createFlight(data) {
 
 async function getFlights(query) {
   let customFilter = {};
+  let sortFilter = [];
   const endingTripTime = " 23:59:59";
   //trips TIA - LIA
   if (query.trips) {
@@ -61,8 +62,21 @@ async function getFlights(query) {
     console.log(customFilter.departureTime);
   }
 
+  if (query.sort) {
+    const params = query.sort.split(",");
+    const sortFilters = params.map((param) => {
+      const [field, order] = param.split("_");
+      return { [field]: order.toLowerCase() };
+    });
+    sortFilter = sortFilters;
+    console.log(sortFilters, sortFilter);
+  }
+
   try {
-    const flights = await flightRepository.getAllFlights(customFilter);
+    const flights = await flightRepository.getAllFlights(
+      customFilter,
+      sortFilter
+    );
     if (flights.length == 0) {
       throw new AppError(
         "No flights found in the database",

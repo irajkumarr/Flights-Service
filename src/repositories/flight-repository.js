@@ -39,7 +39,7 @@ class FlightRepository extends CrudRepository {
             address: true,
             createdAt: true,
             updatedAt: true,
-            city: true, 
+            city: true,
           },
         },
       },

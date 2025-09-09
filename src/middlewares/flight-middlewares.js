@@ -32,11 +32,23 @@ const flightCreateSchema = Joi.object({
     "any.required": "Departure time is required",
     "date.empty": "Departure time cannot be empty",
   }),
-  arrivalTime: Joi.date().required().messages({
-    "date.base": "Arrival time must be a date",
-    "any.required": "Arrival time is required",
-    "date.empty": "Arrival time cannot be empty",
-  }),
+  arrivalTime: Joi.date()
+    .required()
+    .messages({
+      "date.base": "Arrival time must be a date",
+      "any.required": "Arrival time is required",
+      "date.empty": "Arrival time cannot be empty",
+    })
+    .custom((value, helpers) => {
+      const { departureTime } = helpers.state.ancestors[0];
+      if (new Date(value).getTime() <= new Date(departureTime).getTime()) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    })
+    .messages({
+      "any.invalid": "Arrival time must be later than departure time",
+    }),
   price: Joi.number().required().positive().messages({
     "number.base": "Price must be a number",
     "any.required": "Price is required",

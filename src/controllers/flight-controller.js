@@ -1,0 +1,48 @@
+const { FlightService } = require("../services");
+const { asyncHandler } = require("../middlewares");
+const { SuccessResponse } = require("../utils/common");
+const { StatusCodes } = require("http-status-codes");
+
+/**
+ * POST : /
+ * req-body {
+ * flightNumber:"BA-596",
+ * airplaneId:1,
+ * departureAirportId:"BA",
+ * arrivalAirportId:"LIA",
+ * arrivalTime:2023-10-27 17:30:00,
+ * departureTime:2025-10-27 15:30:00,
+ * price:4500,
+ * totalSeats:130,
+ * }
+ */
+const createFlight = asyncHandler(async (req, res) => {
+  const {
+    flightNumber,
+    airplaneId,
+    departureAirportId,
+    arrivalAirportId,
+    departureTime,
+    arrivalTime,
+    price,
+    boardingGate,
+    totalSeats,
+  } = req.body;
+  const flight = await FlightService.createFlight({
+    flightNumber,
+    airplaneId,
+    departureAirportId,
+    arrivalAirportId,
+    departureTime,
+    arrivalTime,
+    price,
+    boardingGate,
+    totalSeats,
+  });
+  SuccessResponse.data = flight;
+  return res.status(StatusCodes.CREATED).json(SuccessResponse);
+});
+
+module.exports = {
+  createFlight,
+};

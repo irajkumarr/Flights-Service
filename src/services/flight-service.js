@@ -28,6 +28,44 @@ async function createFlight(data) {
   }
 }
 
+async function getFlights(query) {
+  let customFilter = {};
+  //trips TIA - LIA
+  if (query.trips) {
+    [departureAirportId, arrivalAirportId] = query.trips.split("-");
+    customFilter.departureAirportId = departureAirportId;
+    customFilter.arrivalAirportId = arrivalAirportId;
+  }
+  // price 1000-4500
+  if (query.price) {
+    [minPrice, maxPrice] = query.price.split("-");
+    customFilter.price = {
+      gte: minPrice,
+      lte: maxPrice,
+    };
+  }
+
+  try {
+    const flights = await flightRepository.getAllFlights(customFilter);
+    if (flights.length == 0) {
+      throw new AppError(
+        "No flights found in the database",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    return flights;
+  } catch (error) {
+    if (error.statusCode === StatusCodes.NOT_FOUND) {
+      throw new AppError("No flights found in the database", error.statusCode);
+    }
+    throw new AppError(
+      "Cannot fetch data of all the flights",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createFlight,
+  getFlights,
 };

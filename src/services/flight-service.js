@@ -30,6 +30,7 @@ async function createFlight(data) {
 
 async function getFlights(query) {
   let customFilter = {};
+  const endingTripTime = " 23:59:59";
   //trips TIA - LIA
   if (query.trips) {
     [departureAirportId, arrivalAirportId] = query.trips.split("-");
@@ -49,6 +50,15 @@ async function getFlights(query) {
     customFilter.totalSeats = {
       gte: Number(query.travellers),
     };
+  }
+
+  // tripDate 2023-03-09
+  if (query.tripDate) {
+    customFilter.departureTime = {
+      gte: new Date(query.tripDate),
+      lte: new Date(query.tripDate + endingTripTime),
+    };
+    console.log(customFilter.departureTime);
   }
 
   try {

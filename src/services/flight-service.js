@@ -84,6 +84,7 @@ async function getFlights(query) {
     }
     return flights;
   } catch (error) {
+    console.log(error);
     if (error instanceof AppError) {
       throw error;
     }

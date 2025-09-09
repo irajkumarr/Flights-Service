@@ -69,7 +69,6 @@ async function getFlights(query) {
       return { [field]: order.toLowerCase() };
     });
     sortFilter = sortFilters;
-    console.log(sortFilters, sortFilter);
   }
 
   try {
@@ -85,9 +84,8 @@ async function getFlights(query) {
     }
     return flights;
   } catch (error) {
-    console.log(error);
-    if (error.statusCode === StatusCodes.NOT_FOUND) {
-      throw new AppError("No flights found in the database", error.statusCode);
+    if (error instanceof AppError) {
+      throw error;
     }
     throw new AppError(
       "Cannot fetch data of all the flights",

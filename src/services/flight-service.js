@@ -35,6 +35,12 @@ async function getFlights(query) {
   //trips TIA - LIA
   if (query.trips) {
     [departureAirportId, arrivalAirportId] = query.trips.split("-");
+    if (departureAirportId === arrivalAirportId) {
+      throw new AppError(
+        "Departure and arrival airports cannot be the same",
+        StatusCodes.BAD_REQUEST
+      );
+    }
     customFilter.departureAirportId = departureAirportId;
     customFilter.arrivalAirportId = arrivalAirportId;
   }

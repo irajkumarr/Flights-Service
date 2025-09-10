@@ -63,3 +63,18 @@ model Flight {
 
   @@map("flights")
 }
+
+model Seat {
+  id        Int      @id @default(autoincrement())
+  airportId Int      @map("airport_id")
+  row       Int
+  col       String
+  type      SeatType @default(ECONOMY)
+}
+
+enum SeatType {
+  BUSINESS
+  ECONOMY
+  PREMIUM_ECONOMY
+  FIRST_CLASS
+}

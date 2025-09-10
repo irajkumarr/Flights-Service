@@ -10,6 +10,9 @@
   "keywords": [],
   "author": "Raj Kumar",
   "license": "ISC",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.15.0",

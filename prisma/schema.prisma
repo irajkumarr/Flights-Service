@@ -15,6 +15,7 @@ model Airplane {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   flights     Flight[]
+  Seat        Seat[]
 
   @@map("airplanes")
 }
@@ -65,11 +66,16 @@ model Flight {
 }
 
 model Seat {
-  id        Int      @id @default(autoincrement())
-  airportId Int      @map("airport_id")
-  row       Int
-  col       String
-  type      SeatType @default(ECONOMY)
+  id         Int      @id @default(autoincrement())
+  airplaneId Int      @map("airplane_id")
+  row        Int
+  col        String
+  type       SeatType @default(ECONOMY)
+
+  //relations 
+  airplane Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
+
+  @@map("seats")
 }
 
 enum SeatType {

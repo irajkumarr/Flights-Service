@@ -56,11 +56,12 @@ model Flight {
   price              Int
   boardingGate       String?  @map("boarding_gate")
   totalSeats         Int      @map("total_seats")
-
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
   // Relation
-  airplane         Airplane @relation(fields: [airplaneId], references: [id])
-  departureAirport Airport  @relation("DepartureFlights", fields: [departureAirportId], references: [code], onDelete: Cascade)
-  arrivalAirport   Airport  @relation("ArrivalFlights", fields: [arrivalAirportId], references: [code], onDelete: Cascade)
+  airplane           Airplane @relation(fields: [airplaneId], references: [id])
+  departureAirport   Airport  @relation("DepartureFlights", fields: [departureAirportId], references: [code], onDelete: Cascade)
+  arrivalAirport     Airport  @relation("ArrivalFlights", fields: [arrivalAirportId], references: [code], onDelete: Cascade)
 
   @@map("flights")
 }
@@ -71,9 +72,10 @@ model Seat {
   row        Int
   col        String
   type       SeatType @default(ECONOMY)
-
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
   //relations 
-  airplane Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
+  airplane   Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
 
   @@map("seats")
 }

@@ -63,8 +63,21 @@ const getFlight = asyncHandler(async (req, res) => {
   return res.status(StatusCodes.CREATED).json(SuccessResponse);
 });
 
+/**
+ * PATCH : /:id/seats
+ * req-body {flightId:1,seats:3}
+ */
+const updateFlight = asyncHandler(async (req, res) => {
+  const { seats, dec } = req.body;
+  const flightId = req.params.id;
+  const flight = await FlightService.updateSeats({ flightId, seats, dec });
+  SuccessResponse.data = flight;
+  return res.status(StatusCodes.OK).json(SuccessResponse);
+});
+
 module.exports = {
   createFlight,
   getFlights,
   getFlight,
+  updateFlight,
 };

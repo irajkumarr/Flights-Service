@@ -1,5 +1,7 @@
 const CrudRepository = require("./crud-repository");
 const { prisma } = require("../config");
+const { AppError } = require("../utils");
+const { StatusCodes } = require("http-status-codes");
 
 class FlightRepository extends CrudRepository {
   constructor() {
@@ -45,6 +47,34 @@ class FlightRepository extends CrudRepository {
       },
     });
     return response;
+  }
+
+  async updateRemainingSeats(flightId, seats, dec = true) {
+    return await prisma.$transaction(async (tx) => {
+      // Lock the flight row for update
+      const [flightRow] = await tx.$queryRaw`
+      SELECT * FROM flights
+      WHERE flights.id = ${flightId}::int
+      FOR UPDATE
+    `;
+
+      if (!flightRow) {
+        throw new AppError(
+          "Flight not found in the database",
+          StatusCodes.NOT_FOUND
+        );
+      }
+
+      // Atomically increment or decrement totalSeats
+      const updatedFlight = await tx.flight.update({
+        where: { id: flightId },
+        data: dec
+          ? { totalSeats: { decrement: seats } }
+          : { totalSeats: { increment: seats } },
+      });
+
+      return updatedFlight;
+    });
   }
 }
 

@@ -90,7 +90,7 @@ async function getFlights(query) {
     }
     return flights;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     if (error instanceof AppError) {
       throw error;
     }
@@ -128,7 +128,7 @@ async function updateSeats(data) {
     );
     return response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw new AppError(
       "Cannot update data of the flight",
       StatusCodes.INTERNAL_SERVER_ERROR

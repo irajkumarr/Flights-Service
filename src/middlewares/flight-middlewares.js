@@ -91,6 +91,10 @@ const flightUpdateSchema = Joi.object({
     "number.empty": "Seats cannot be empty",
     "number.positive": "Seats must be greater than 0",
   }),
+  dec: Joi.boolean().messages({
+    "boolean.base": "Dec must be a boolean",
+    "number.empty": "Dec cannot be empty",
+  }),
 });
 // Middleware
 function validateUpdateRequest(req, res, next) {

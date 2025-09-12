@@ -84,36 +84,23 @@ function validateCreateRequest(req, res, next) {
   next();
 }
 
-const airportUpdateSchema = Joi.object({
-  name: Joi.string().messages({
-    "string.empty": "Airport name cannot be empty",
-    "string.base": "Airport name must be a string",
-  }),
-  code: Joi.string().max(20).messages({
-    "string.base": "Airport code must be a string",
-    "string.max": "Airport code cannot exceed 20",
-    "string.empty": "Airport code cannot be empty",
-  }),
-  address: Joi.string().messages({
-    "string.base": "Airport address must be a string",
-    "string.empty": "Airport address cannot be empty",
-  }),
-  cityId: Joi.number().positive().messages({
-    "number.base": "Airplane city must be a number",
-    "number.positive": "Airplane city must be greater than 0",
-    "string.empty": "Airport city cannot be empty",
+const flightUpdateSchema = Joi.object({
+  seats: Joi.number().positive().required().messages({
+    "number.base": "Seats must be a number",
+    "any.required": "Seats is required",
+    "number.empty": "Seats cannot be empty",
+    "number.positive": "Seats must be greater than 0",
   }),
 });
 // Middleware
 function validateUpdateRequest(req, res, next) {
-  const { error, value } = airportUpdateSchema.validate(req.body, {
+  const { error, value } = flightUpdateSchema.validate(req.body, {
     abortEarly: false,
-    convert: false,
   });
 
   if (error) {
     const errors = error.details.map((detail) => FormatMessage(detail.message));
-    ErrorResponse.message = "Something went wrong while updating airport";
+    ErrorResponse.message = "Something went wrong while updating seats";
     ErrorResponse.error = new AppError(errors, StatusCodes.BAD_REQUEST);
     return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
   }

@@ -1,10 +1,10 @@
-const SEAT_TYPE = {
-    BUSINESS: 'business',
-    ECONOMY: 'economy',
-    PREMIUM_ECONOMY: 'premium-economy',
-    FIRST_CLASS: 'first-class'
-}
+const SEAT_TYPE = Object.freeze({
+  BUSINESS: "BUSINESS",
+  ECONOMY: "ECONOMY",
+  PREMIUM_ECONOMY: "PREMIUM_ECONOMY",
+  FIRST_CLASS: "FIRST_CLASS",
+});
 
 module.exports = {
-    SEAT_TYPE
-}
+  SEAT_TYPE,
+};

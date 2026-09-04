@@ -1,0 +1,51 @@
+# Dependencies (Crucial: never copy local packages)
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs (depending on your build tool)
+
+dist/
+build/
+.next/
+.nuxt/
+out/
+
+# Environment secrets and local variables
+
+.env
+.env.local
+.env.production
+.env.development
+_.pem
+_.key
+
+# Testing and coverage
+
+coverage/
+.nyc_output
+.jest/
+
+# Version control
+
+.git
+.gitignore
+.gitattributes
+
+# OS metadata and IDE files
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker configurations
+
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+combined.log

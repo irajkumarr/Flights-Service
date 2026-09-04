@@ -16,7 +16,7 @@ async function createAirplane(data) {
     //fallback
     throw new AppError(
       "Something went wrong while creating airplane",
-      StatusCodes.INTERNAL_SERVER_ERROR
+      StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }
 }
@@ -27,14 +27,14 @@ async function getAirplanes() {
     if (airplanes.length == 0) {
       throw new AppError(
         "No airplanes found in the database",
-        StatusCodes.NOT_FOUND
+        StatusCodes.NOT_FOUND,
       );
     }
     return airplanes;
   } catch (error) {
     throw new AppError(
       "Cannot fetch data of all the airplanes",
-      StatusCodes.INTERNAL_SERVER_ERROR
+      StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }
 }
@@ -47,12 +47,12 @@ async function getAirplane(id) {
     if (error.statusCode == StatusCodes.NOT_FOUND) {
       throw new AppError(
         "The airplane you requested is not present",
-        error.statusCode
+        error.statusCode,
       );
     }
     throw new AppError(
       "Cannot fetch data of the airplane",
-      StatusCodes.INTERNAL_SERVER_ERROR
+      StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }
 }
@@ -65,12 +65,12 @@ async function deleteAirplane(id) {
     if (error.name === "PrismaClientKnownRequestError") {
       throw new AppError(
         "The airplane you requested to delete is not present",
-        StatusCodes.NOT_FOUND
+        StatusCodes.NOT_FOUND,
       );
     }
     throw new AppError(
       "Cannot fetch data of the airplane",
-      StatusCodes.INTERNAL_SERVER_ERROR
+      StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }
 }
@@ -83,12 +83,12 @@ async function updateAirplane(id, data) {
     if (error.name === "PrismaClientKnownRequestError") {
       throw new AppError(
         "The airplane you requested to update is not present",
-        StatusCodes.NOT_FOUND
+        StatusCodes.NOT_FOUND,
       );
     }
     throw new AppError(
       "Cannot fetch data of the airplane",
-      StatusCodes.INTERNAL_SERVER_ERROR
+      StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }
 }

@@ -18,5 +18,5 @@ app.use(errorHandler);
 
 //Server starting
 app.listen(ServerConfig.PORT, () => {
-  console.log(`Server started at PORT ${ServerConfig.PORT}`);
+  console.log(`Server started at PORT ${ServerConfig.PORT} v1`);
 });

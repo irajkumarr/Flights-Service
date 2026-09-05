@@ -45,7 +45,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION || 'ap-south-1' }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          ssh -o StrictHostKeyChecking=no \
+          ssh -T -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
             set -e
 
@@ -56,19 +56,19 @@ jobs:
 
             cd ~/Flights-Service
 
-            # Pull latest repo files (docker-compose.yml, nginx config, etc.)
+            # Pull latest repo files
             git pull https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main
 
-            # Login Docker to ECR on EC2 (using the EC2 IAM Role)
+            # Login Docker to ECR on EC2 (using EC2 IAM Role)
             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
-            # Pull the freshly pushed image from ECR
+            # Pull the new image from ECR
             docker compose pull
 
-            # Restart containers with the new image
+            # Restart containers
             docker compose down
             docker compose up -d
 
-            # Clean up old unused images to save disk space
+            # Clean up old unused images
             docker image prune -f
           EOF

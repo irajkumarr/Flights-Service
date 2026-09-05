@@ -17,33 +17,42 @@ jobs:
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PORT: ${{ secrets.PORT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          envs: DATABASE_URL,PORT
+          envs: DATABASE_URL,PORT,GITHUB_TOKEN
           script: |
-            # Set target directory on EC2
-            APP_DIR="~/Flights-Service"
+            set -e
+
+            # Use $HOME instead of ~ inside quotes
+            APP_DIR="$HOME/Flights-Service"
 
             # Clone repo if not exists, otherwise pull latest changes
             if [ ! -d "$APP_DIR" ]; then
-              git clone https://github.com/${{ github.repository }}.git $APP_DIR
-              cd $APP_DIR
+              git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" "$APP_DIR"
+              cd "$APP_DIR"
             else
-              cd $APP_DIR
-              git reset --hard
-              git pull origin ${{ github.ref_name }}
+              cd "$APP_DIR"
+              git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+              git fetch origin
+              git reset --hard "origin/${{ github.ref_name }}"
             fi
 
-            # Create or update .env file with secrets
-            echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" > .env
-            echo "PORT=\"${{ secrets.PORT || 3000 }}\"" >> .env
+            # Create or update .env file
+            cat << EOF > .env
+            DATABASE_URL="${DATABASE_URL}"
+            PORT="${PORT:-3000}"
+            EOF
 
             # Build and restart containers using Docker Compose
             docker compose down || true
             docker compose up -d --build
 
-            # Clean up dangling images to save disk space
+            # Clean up dangling images
             docker image prune -f

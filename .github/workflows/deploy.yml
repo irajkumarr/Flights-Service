@@ -1,0 +1,49 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          envs: DATABASE_URL,PORT
+          script: |
+            # Set target directory on EC2
+            APP_DIR="~/Flights-Service"
+
+            # Clone repo if not exists, otherwise pull latest changes
+            if [ ! -d "$APP_DIR" ]; then
+              git clone https://github.com/${{ github.repository }}.git $APP_DIR
+              cd $APP_DIR
+            else
+              cd $APP_DIR
+              git reset --hard
+              git pull origin ${{ github.ref_name }}
+            fi
+
+            # Create or update .env file with secrets
+            echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" > .env
+            echo "PORT=\"${{ secrets.PORT || 3000 }}\"" >> .env
+
+            # Build and restart containers using Docker Compose
+            docker compose down || true
+            docker compose up -d --build
+
+            # Clean up dangling images to save disk space
+            docker image prune -f

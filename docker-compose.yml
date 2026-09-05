@@ -1,5 +1,6 @@
 services:
   flights-service:
+    image: 635520162216.dkr.ecr.ap-south-1.amazonaws.com/flights-service:latest
     build:
       context: .
       dockerfile: Dockerfile

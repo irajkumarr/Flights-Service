@@ -56,7 +56,9 @@ jobs:
 
             cd ~/Flights-Service
 
-            # Pull latest repo files
+            # Discard any manual local changes on EC2 and pull latest code
+            git reset --hard HEAD
+            git clean -fd
             git pull https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main
 
             # Login Docker to ECR on EC2 (using EC2 IAM Role)

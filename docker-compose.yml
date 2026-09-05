@@ -4,10 +4,21 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: flights-service
-    ports:
-      - "${PORT:-3000}:3000"
+    expose:
+      - "3000"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - flights-service
     restart: unless-stopped

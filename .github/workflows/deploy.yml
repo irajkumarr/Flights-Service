@@ -20,14 +20,22 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
       - name: Deploy to EC2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
             set -e
+
+            # Clone if directory doesn't exist, otherwise pull
+            if [ ! -d ~/Flights-Service ]; then
+              git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git ~/Flights-Service
+            fi
 
             cd ~/Flights-Service
 
-            git pull origin main
+            # Authenticated pull (works for both public and private repositories)
+            git pull https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main
 
             docker compose down
 
@@ -35,3 +43,4 @@ jobs:
 
             docker image prune -f
           EOF
+

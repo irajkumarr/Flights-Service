@@ -32,7 +32,7 @@
       "secrets": [
         {
           "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:secretsmanager:ap-south-1:635520162216:secret:flights/database_url-Z6Zm1e"
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:635520162216:secret:flights/database_url-Z6Zm1e:DATABASE_URL::"
         }
       ],
       "logConfiguration": {

@@ -1,4 +1,4 @@
-name: Build, Push to ECR & Deploy to EC2
+name: Production CI/CD - Deploy to Amazon ECS
 
 on:
   push:
@@ -6,71 +6,58 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: flights-service
+  ECS_CLUSTER: flights-cluster
+  ECS_SERVICE: flights-service-app
+  ECS_TASK_DEFINITION: task-definition.json
+  CONTAINER_NAME: flights-service
+
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Build, Tag Immutable Image & Deploy to ECS
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'ap-south-1' }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, Tag Immutable Image (Git SHA) & Push to ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: flights-service
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # Build image with immutable Git Commit SHA tag
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.1
+      - name: Render New Task Definition Revision
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
-      - name: Deploy to EC2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AWS_REGION: ${{ secrets.AWS_REGION || 'ap-south-1' }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          ssh -T -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
-            set -e
-
-            # Clone if directory doesn't exist, otherwise pull config
-            if [ ! -d ~/Flights-Service ]; then
-              git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git ~/Flights-Service
-            fi
-
-            cd ~/Flights-Service
-
-            # Discard any manual local changes on EC2 and pull latest code
-            git reset --hard HEAD
-            git clean -fd
-            git pull https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main
-
-            # Login Docker to ECR on EC2 (using EC2 IAM Role)
-            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-
-            # Pull the new image from ECR
-            docker compose pull
-
-            # Restart containers
-            docker compose down
-            docker compose up -d
-
-            # Clean up old unused images
-            docker image prune -f
-          EOF
+      - name: Deploy to Amazon ECS (Zero-Downtime Rolling Update)
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

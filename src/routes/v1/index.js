@@ -6,9 +6,14 @@ const flightRoutes = require("./flight-routes");
 
 const router = express.Router();
 
+router.get("/health", (req, res) => {
+  return res.status(200).json({ status: "UP", timestamp: new Date().toISOString() });
+});
+
 router.use("/airplanes", airplaneRoutes);
 router.use("/cities", cityRoutes);
 router.use("/airports", airportRoutes);
 router.use("/flights", flightRoutes);
 
 module.exports = router;
+
